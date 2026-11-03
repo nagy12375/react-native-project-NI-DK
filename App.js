@@ -1,11 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View,TextInput, Button } from 'react-native';
+import Bejegyzes from './components/Bejegyzes.js';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Név: Saját név</Text>
-      <StatusBar style="auto" />
+      const [b,setB] = useState([<Bejegyzes cim="Minta" hely="Minta" />]);
+      const [cim,setCim] = useState("");
+      const [hely,setHely] = useState("");
+      <Button onPress={() => setB(s=> s.push(<Bejegyzes cim={cim} hely={hely} />))}/>
+      <TextInput onChangeText={setCim}/>
+      <TextInput onChangeText={setHely}/>
     </View>
   );
 }
