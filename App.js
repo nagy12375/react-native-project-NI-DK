@@ -1,43 +1,43 @@
 import { StyleSheet, View, TextInput, Button, Text } from 'react-native';
 import Bejegyzes from './components/Bejegyzes.js';
 import { useState } from 'react';
+import useBejegyzes from './hooks/useBejegyzesek.js';
 
 export default function App() {
-  const [b, setB] = useState([{ cim: 'Nivák', hely: 'Eger', kedvenc: false }]);
+  const { utinaplo, betolt, ujBejegyzes, kedvencValtas } = useBejegyzes();
   const [cim, setCim] = useState('');
   const [hely, setHely] = useState('');
 
-  function kedvencValtas(index) {
-    setB((e) =>
-      e.map((elem, i) =>
-        i === index
-          ? {
-              ...elem,
-              kedvenc: !elem.kedvenc,
-            }
-          : elem,
-      ),
-    );
+  function hozzaadas() {
+    ujBejegyzes(cim, hely);
+    setCim('');
+    setHely('');
   }
 
   return (
     <View style={styles.container}>
-      <Text>összes bejegyzés: {b.length}</Text>
+      {betolt ? (
+        <Text>Betöltés...</Text>
+      ) : (
+        <>
+          <Text>összes bejegyzés: {utinaplo.length}</Text>
 
-      <Text>Kedvencek száma: {b.filter((elem) => elem.kedvenc).length}</Text>
-      <TextInput placeholder="cim: " value={cim} onChangeText={setCim} />
-      <TextInput placeholder="hely: " value={hely} onChangeText={setHely} />
-      <Button title="Nyomj meg" onPress={() => setB((e) => [...e, { cim, hely, kedvenc: false }])} />
+          <Text>Kedvencek száma: {utinaplo.filter((elem) => elem.kedvenc).length}</Text>
+          <TextInput placeholder="cim: " value={cim} onChangeText={setCim} />
+          <TextInput placeholder="hely: " value={hely} onChangeText={setHely} />
+          <Button title="Nyomj meg" onPress={hozzaadas} />
 
-      {b.map((elem, index) => (
-        <Bejegyzes
-          key={index}
-          cim={elem.cim}
-          hely={elem.hely}
-          kedvenc={elem.kedvenc}
-          onKedvenc={() => kedvencValtas(index)}
-        ></Bejegyzes>
-      ))}
+          {utinaplo.map((elem, index) => (
+            <Bejegyzes
+              key={index}
+              cim={elem.cim}
+              hely={elem.hely}
+              kedvenc={elem.kedvenc}
+              onKedvenc={() => kedvencValtas(index)}
+            ></Bejegyzes>
+          ))}
+        </>
+      )}
     </View>
   );
 }
