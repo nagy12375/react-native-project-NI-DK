@@ -1,16 +1,22 @@
-import { StyleSheet, View, TextInput,Text,Pressable } from 'react-native';
+import { StyleSheet, View, TextInput, Text, ScrollView, useWindowDimensions } from 'react-native';
+import { SafeAreaView,SafeAreaProvider } from 'react-native-safe-area-context';
+import { tavolsag, szinek } from './theme.js';
+import Gomb from './components/Gomb.js';
 import Bejegyzes from './components/Bejegyzes.js';
 import { useState } from 'react';
 import useBejegyzes from './hooks/useBejegyzesek.js';
 
 export default function App() {
+  const {width} = useWindowDimensions();
+  const ketoszlop = width >= 600;
   const { utinaplo, betolt, ujBejegyzes, kedvencValtas } = useBejegyzes();
   const [cim, setCim] = useState('');
   const [hely, setHely] = useState('');
-  const [hibas,setHibas] = useState(false);
+  const [hibas, setHibas] = useState(false);
+
 
   function hozzaadas() {
-    if(cim === '' || hely === ''){
+    if (cim === '' || hely === '') {
       setHibas(true);
       return;
     }
@@ -22,11 +28,13 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaProvider>
+    <SafeAreaView style={styles.container}>
       {betolt ? (
         <Text>Betöltés...</Text>
       ) : (
         <>
+          <Text>{ketoszlop ? 'true' : 'false' }</Text>
           <View style={styles.statisztika}>
             <View style={styles.statdoboz}>
               <Text>összes bejegyzés: {utinaplo.length}</Text>
@@ -37,74 +45,105 @@ export default function App() {
           </View>
           <View style={styles.keresoresz}>
             <View style={styles.keresomezo}>
-              <TextInput style={[{ flex: 1 },styles.mezo,hibas && cim === '' && {borderColor:'red'}]} placeholder="cim: " value={cim} onChangeText={setCim} />
-              <Pressable onPress={hozzaadas} 
-               style={({pressed})=>[
-               styles.gomb,pressed && {opacity:0.6}]}
-               >
-            <Text style={{color:'white'}} >Nyomj meg</Text>
-              </Pressable>
+              <TextInput
+                style={[{ flex: 1 }, styles.mezo, hibas && cim === '' && { borderColor: 'red' }]}
+                placeholder="cim: "
+                value={cim}
+                onChangeText={setCim}
+              />
+              <Gomb
+                onPress={hozzaadas}
+                style={({ pressed }) => [styles.gomb, pressed && { opacity: 0.6 }]}
+                cim="Hozzáadás"
+              ></Gomb>
             </View>
-            <TextInput style={[styles.mezo,hibas && hely === '' && {borderColor:'red'}]} placeholder="hely: " value={hely} onChangeText={setHely} />
+            <TextInput
+              style={[styles.mezo, hibas && hely === '' && { borderColor: 'red' }]}
+              placeholder="hely: "
+              value={hely}
+              onChangeText={setHely}
+            />
           </View>
 
+          <ScrollView style={{width:'100%'}} 
+          contentContainerStyle={[styles.listatartalom,ketoszlop && styles.ketoszlopkontener]}>
           {utinaplo.map((elem, index) => (
-            <Bejegyzes
+            <Bejegyzes 
               key={index}
               cim={elem.cim}
               hely={elem.hely}
               kedvenc={elem.kedvenc}
+              kep
               onKedvenc={() => kedvencValtas(index)}
+              style= {ketoszlop ? styles.ketoszlop : styles.egyoszlop}
             ></Bejegyzes>
           ))}
+          </ScrollView>
         </>
       )}
-    </View>
+      
+    </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: szinek.feher,
     alignItems: 'center',
     justifyContent: 'center',
   },
   statisztika: {
     flexDirection: 'row',
-    gap: 10,
+    gap: tavolsag.kozepes,
     width: '80%',
   },
   statdoboz: {
     borderWidth: 1,
-    borderColor: 'red',
-    borderRadius: 10,
-    padding: 5,
+    borderColor: szinek.veszelyes,
+    borderRadius: tavolsag.kozepes,
+    padding: tavolsag.kicsi,
   },
   keresomezo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 5,
+    gap: tavolsag.kicsi,
   },
   keresoresz: {
-    padding: 15,
-    margin: 5,
+    padding: tavolsag.kozepes,
+    margin: tavolsag.kicsi,
     borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 10,
+    borderColor: szinek.szovegsotet,
+    borderRadius: tavolsag.kozepes,
     width: '80%',
   },
-    gomb:{
-    backgroundColor:'blue',
-    padding:5,
-    width:100,
-    alignItems:'center',
-    justifyContent:'center'
+  gomb: {
+    padding: tavolsag.kicsi,
+    width: 100,
   },
-  mezo:{
-    borderWidth:1,
-    padding:5,
-    borderRadius:12,
-    margin:5
+  mezo: {
+    borderWidth: 1,
+    padding: tavolsag.kicsi,
+    borderRadius: tavolsag.kozepes,
+    margin: tavolsag.kicsi,
+  },
+  listatartalom:{
+    width:'100%',
+    margin:tavolsag.kicsi,
+    padding:tavolsag.kozepes, 
+    gap:tavolsag.kicsi 
+  },
+  ketoszlopkontener: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+},
+  ketoszlop:{
+    width:'48%'
+  },
+  egyoszlop:{
+    width:'100%'
   }
 });

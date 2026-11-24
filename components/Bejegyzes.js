@@ -1,13 +1,28 @@
-import { Text, View, StyleSheet, Pressable } from 'react-native';
+import { Text, View, StyleSheet, Image } from 'react-native';
+import { tavolsag, betumeret } from '../theme.js';
+import Gomb from './Gomb';
 
-export default function Bejegyzes({ cim, hely, leiras, kedvenc, onKedvenc }) {
+export default function Bejegyzes({ cim, hely, leiras, kedvenc, onKedvenc, kep, style }) {
   return (
-    <View style={[styles.kartya, kedvenc && styles.kedvenc]}>
+    <View style={[styles.kartya,style, kedvenc && styles.kedvenc]}>
+      {kep && (
+        <View style={styles.kepkontener}>
+          <Image
+            source={{ uri: 'https://visiteger.com/uploads/1000x_1623064120DSC07392.jpg' }}
+            resizeMode="cover"
+            style={styles.kep}
+          ></Image>
+          {kedvenc && <Text style={styles.csillag}>⭐</Text>}
+        </View> 
+      )}
+
       <View style={styles.elrendezes}>
         <Text style={styles.cim}>Cím:{cim}</Text>
-        <Pressable onPress={onKedvenc} style={({ pressed }) => [styles.gomb, pressed && { opacity: 0.6 }]}>
-          <Text style={{ color: 'white' }}>{kedvenc ? 'Kedvenc' : 'Nem kedvenc'}</Text>
-        </Pressable>
+        <Gomb
+          cim={kedvenc ? 'Kedvenc' : 'Nem kedvenc'}
+          onPress={onKedvenc}
+          style={({ pressed }) => [styles.gomb, pressed && { opacity: 0.6 }]}
+        ></Gomb>
       </View>
       <View style={styles.helyszin}>
         <Text>
@@ -22,16 +37,15 @@ export default function Bejegyzes({ cim, hely, leiras, kedvenc, onKedvenc }) {
 
 const styles = StyleSheet.create({
   kartya: {
-    padding: 16,
-    margin: 10,
-    borderRadius: 12,
+    padding: tavolsag.nagy,
+    margin: tavolsag.kicsi,
+    borderRadius: tavolsag.kozepes,
     borderWidth: 2,
-    width: '80%',
   },
   cim: {
     flex: 1,
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: betumeret.nagy,
   },
   helyszin: {
     fontFamily: 'Times New Roman',
@@ -45,9 +59,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   gomb: {
-    backgroundColor: 'blue',
-    padding: 5,
+    padding: tavolsag.kicsi,
     width: 100,
     alignItems: 'center',
   },
+  kepkontener:{
+    position:'relative',
+    marginBottom: tavolsag.kicsi,
+  },
+  kep:{
+    width:'50%',
+    height:160,
+    borderRadius:tavolsag.kicsi
+  },
+  csillag:{
+    position:'absolute',
+    top:tavolsag.kicsi,
+    right:tavolsag.kicsi,
+    fontSize:betumeret.nagy
+  }
 });

@@ -13,7 +13,7 @@
       "supportsTablet": true
     },
     "name": "mobile_development_starter_project",
-    "orientation": "portrait",
+    "orientation": "default",
     "slug": "mobile_development_starter_project",
     "userInterfaceStyle": "light",
     "version": "1.0.0",
